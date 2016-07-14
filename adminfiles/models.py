@@ -8,7 +8,11 @@ from django.core.files.images import get_image_dimensions
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+
+try:
+    from django.contrib.contenttypes.fields import GenericForeignKey
+except ImportError:
+    from django.contrib.contenttypes.generic import GenericForeignKey
 
 from adminfiles import settings
 
@@ -106,7 +110,7 @@ class FileUploadReference(models.Model):
     upload = models.ForeignKey(FileUpload)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
         unique_together = ('upload', 'content_type', 'object_id')
