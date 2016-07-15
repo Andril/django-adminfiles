@@ -14,7 +14,7 @@ class FileUploadAdmin(admin.ModelAdmin):
 #    class Media:
 #        js = (JQUERY_URL, 'photo-edit.js')
     def response_change(self, request, obj):
-        if request.POST.has_key("_popup"):
+        if "_popup" in request.POST:
             return HttpResponse('<script type="text/javascript">'
                                 'opener.dismissEditPopup(window);'
                                 '</script>')
@@ -24,14 +24,14 @@ class FileUploadAdmin(admin.ModelAdmin):
         response = super(FileUploadAdmin, self).delete_view(request,
                                                             *args,
                                                             **kwargs)
-        if request.POST.has_key("post") and request.GET.has_key("_popup"):
+        if "post" in request.POST and "_popup" in request.GET:
             return HttpResponse('<script type="text/javascript">'
                                 'opener.dismissEditPopup(window);'
                                 '</script>')
         return response
 
     def response_add(self, request, *args, **kwargs):
-        if request.POST.has_key('_popup'):
+        if '_popup' in request.POST:
             return HttpResponse('<script type="text/javascript">'
                                 'opener.dismissAddUploadPopup(window);'
                                 '</script>')
