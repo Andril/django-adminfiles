@@ -9,7 +9,7 @@ from adminfiles.listeners import register_listeners
 class FileUploadAdmin(admin.ModelAdmin):
     list_display = ['title', 'description', 'upload_date', 'upload', 'mime_type']
     list_editable = ['description']
-    prepopulated_fields = {'slug': ('title',)}
+    exclude = ('slug',)
 # uncomment for snipshot photo editing feature
 #    class Media:
 #        js = (JQUERY_URL, 'photo-edit.js')

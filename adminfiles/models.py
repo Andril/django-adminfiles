@@ -9,6 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.contenttypes.models import ContentType
 
+from unidecode import unidecode
+
 try:
     from django.contrib.contenttypes.fields import GenericForeignKey
 except ImportError:
@@ -68,6 +70,20 @@ class FileUpload(models.Model):
         return self._get_dimensions()[1]
     
     def save(self, *args, **kwargs):
+        if not self.id and not self.slug:
+            slug = slugify(unidecode(self.title))
+            slug_exists = True
+            counter = 1
+            self.slug = slug
+            while slug_exists:
+                try:
+                    slug_exits = FileUpload.objects.get(slug=slug)
+                    if slug_exits:
+                        slug = self.slug + '_' + str(counter)
+                        counter += 1
+                except FileUpload.DoesNotExist:
+                    self.slug = slug
+                    break
         try:
             uri = self.upload.path
         except NotImplementedError:
