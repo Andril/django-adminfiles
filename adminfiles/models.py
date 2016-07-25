@@ -1,4 +1,10 @@
+import hashlib
 import os
+import uuid
+
+from os.path import join
+from datetime import datetime
+
 import mimetypes
 
 from django.conf import settings as django_settings
@@ -23,9 +29,20 @@ if 'tagging' in django_settings.INSTALLED_APPS:
 else:
     TagField = None
 
+
+def get_photo_path(instance, filename):
+    """
+    Function is dealing need for parameter `upload_to`.
+    Puts image in MEDIA_ROOT/tour_images/ab/c0/abc01234567890123456789012345678.jpg
+    """
+    basename, ext = os.path.splitext(filename)
+    hashed_name = hashlib.md5('{0}{1}{2}'.format(uuid.uuid4(), filename, datetime.now()).encode('utf-8')).hexdigest()
+    return join('settings.ADMINFILES_UPLOAD_TO', hashed_name[:2], hashed_name[2:4], hashed_name + ext)
+
+
 class FileUpload(models.Model):
     upload_date = models.DateTimeField(_('upload date'), auto_now_add=True)
-    upload = models.FileField(_('file'), upload_to=settings.ADMINFILES_UPLOAD_TO)
+    upload = models.FileField(_('file'), upload_to=get_photo_path)
     title = models.CharField(_('title'), max_length=100)
     slug = models.SlugField(_('slug'), max_length=100, unique=True)
     description = models.CharField(_('description'), blank=True, max_length=200)
@@ -115,6 +132,11 @@ class FileUpload(models.Model):
             return None
         return ('http://www.stdicon.com/%s/%s?size=64'
                 % (settings.ADMINFILES_STDICON_SET, self.mime_type()))
+
+    @property
+    def get_image_url(self):
+        """ Return MEDIA_URL + self.photo """
+        return join(settings.MEDIA_URL, str(self.upload)) if self.upload else ''
 
 
 
