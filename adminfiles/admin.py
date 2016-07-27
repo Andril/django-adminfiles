@@ -9,7 +9,7 @@ from adminfiles.listeners import register_listeners
 class FileUploadAdmin(admin.ModelAdmin):
     list_display = ['title', 'description', 'upload_date', 'upload', 'mime_type']
     list_editable = ['description']
-    exclude = ('slug', 'form_field',)
+    exclude = ('slug',)
 # uncomment for snipshot photo editing feature
 #    class Media:
 #        js = (JQUERY_URL, 'photo-edit.js')
@@ -38,11 +38,6 @@ class FileUploadAdmin(admin.ModelAdmin):
         return super(FileUploadAdmin, self).response_add(request,
                                                          *args,
                                                          **kwargs)
-
-    def save_model( self, request, obj, form, change):
-        obj.form_field = 'id_{}'.format(request.GET.get('field'))
-        print(request.GET)
-        obj.save()
 
 
 class FilePickerAdmin(admin.ModelAdmin):

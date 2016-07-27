@@ -72,12 +72,10 @@ class AllView(BaseView):
     link_text = _('All Uploads')
 
     def files(self):
-        field_id = self.request.GET['field']
-        return FileUpload.objects.filter(form_field=field_id)
+        return FileUpload.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super(AllView, self).get_context_data(**kwargs)
-        
         context.update({
             'files': self.files().order_by(*settings.ADMINFILES_THUMB_ORDER)
         })
@@ -88,16 +86,14 @@ class ImagesView(AllView):
     link_text = _('Images')
 
     def files(self):
-        field_id = self.request.GET['field']
-        return super(ImagesView, self).files().filter(content_type='image', form_field=field_id)
+        return super(ImagesView, self).files().filter(content_type='image')
 
 
 class AudioView(AllView):
     link_text = _('Audio')
 
     def files(self):
-        field_id = self.request.GET['field']
-        return super(AudioView, self).files().filter(content_type='audio', form_field=field_id)
+        return super(AudioView, self).files().filter(content_type='audio')
 
 
 class FilesView(AllView):
@@ -105,8 +101,7 @@ class FilesView(AllView):
 
     def files(self):
         not_files = ['video', 'image', 'audio']
-        field_id = self.request.GET['field']
-        return super(FilesView, self).files().exclude(content_type__in=not_files).filter(form_field=field_id)
+        return super(FilesView, self).files().exclude(content_type__in=not_files)
 
 class OEmbedView(BaseView):
     @classmethod

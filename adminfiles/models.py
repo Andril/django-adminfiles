@@ -44,7 +44,6 @@ class FileUpload(models.Model):
     upload_date = models.DateTimeField(_('upload date'), auto_now_add=True)
     upload = models.FileField(_('file'), upload_to=get_photo_path)
     title = models.CharField(_('title'), max_length=100)
-    form_field = models.CharField(max_length=200, blank=True, null=True)
     slug = models.SlugField(_('slug'), max_length=100, unique=True)
     description = models.CharField(_('description'), blank=True, max_length=200)
     content_type = models.CharField(editable=False, max_length=100)
