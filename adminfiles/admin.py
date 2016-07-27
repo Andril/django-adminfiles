@@ -39,6 +39,11 @@ class FileUploadAdmin(admin.ModelAdmin):
                                                          *args,
                                                          **kwargs)
 
+    def save_model( self, request, obj, form, change):
+        obj.form_field = 'id_{}'.format(request.GET.get('field'))
+        print(request.GET)
+        obj.save()
+
 
 class FilePickerAdmin(admin.ModelAdmin):
     adminfiles_fields = []
@@ -56,10 +61,6 @@ class FilePickerAdmin(admin.ModelAdmin):
             except KeyError:
                 field.widget.attrs['class'] = 'adminfilespicker'
         return field
-
-    def save_model( self, request, obj, form, change):
-        obj.form_field = 'id_{}'.format(request.GET.get('field'))
-        obj.save()
 
     class Media:
         js = [JQUERY_URL, 'adminfiles/model.js']
