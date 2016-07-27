@@ -9,7 +9,7 @@ from adminfiles.listeners import register_listeners, save_instance_form_field
 class FileUploadAdmin(admin.ModelAdmin):
     list_display = ['title', 'description', 'upload_date', 'upload', 'mime_type']
     list_editable = ['description']
-    exclude = ('slug',)
+    exclude = ('slug', 'form_field',)
 # uncomment for snipshot photo editing feature
 #    class Media:
 #        js = (JQUERY_URL, 'photo-edit.js')
@@ -51,6 +51,7 @@ class FilePickerAdmin(admin.ModelAdmin):
         field = super(FilePickerAdmin, self).formfield_for_dbfield(
             db_field, **kwargs)
         if db_field.name in self.adminfiles_fields:
+            print(db_field.name)
             save_instance_form_field(db_field.name)
             try:
                 field.widget.attrs['class'] += " adminfilespicker"
