@@ -4,7 +4,7 @@ from django.contrib import admin
 
 from adminfiles.models import FileUpload
 from adminfiles.settings import JQUERY_URL
-from adminfiles.listeners import register_listeners, save_instance_form_field
+from adminfiles.listeners import register_listeners
 
 class FileUploadAdmin(admin.ModelAdmin):
     list_display = ['title', 'description', 'upload_date', 'upload', 'mime_type']
@@ -51,13 +51,15 @@ class FilePickerAdmin(admin.ModelAdmin):
         field = super(FilePickerAdmin, self).formfield_for_dbfield(
             db_field, **kwargs)
         if db_field.name in self.adminfiles_fields:
-            print(db_field.name)
-            save_instance_form_field(db_field.name)
             try:
                 field.widget.attrs['class'] += " adminfilespicker"
             except KeyError:
                 field.widget.attrs['class'] = 'adminfilespicker'
         return field
+
+    def save_model( self, request, obj, form, change):
+        obj.form_field = 'id_{}'.format(request.GET.get('field'))
+        obj.save()
 
     class Media:
         js = [JQUERY_URL, 'adminfiles/model.js']
