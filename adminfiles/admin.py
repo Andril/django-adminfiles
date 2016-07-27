@@ -51,11 +51,11 @@ class FilePickerAdmin(admin.ModelAdmin):
         field = super(FilePickerAdmin, self).formfield_for_dbfield(
             db_field, **kwargs)
         if db_field.name in self.adminfiles_fields:
+            save_instance_form_field(db_field.name)
             try:
                 field.widget.attrs['class'] += " adminfilespicker"
             except KeyError:
                 field.widget.attrs['class'] = 'adminfilespicker'
-        save_instance_form_field(field)
         return field
 
     class Media:
