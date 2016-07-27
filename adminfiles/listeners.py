@@ -47,6 +47,15 @@ def register_listeners(model, fields):
         pre_delete.connect(_delete_references, sender=model, weak=False)
 
 
+def save_instance_form_field(field):
+
+    def _update_file_form_field(sender, instance, **kwargs):
+        instance.form_field = 'id_{}'.format(field)
+        instance.save(update_fields=('form_field', ))
+
+    post_save.connect(_update_file_form_field, sender=FileUpload)
+
+
 def _update_content(sender, instance, created=None, **kwargs):
     """
     Re-save any content models referencing the just-modified

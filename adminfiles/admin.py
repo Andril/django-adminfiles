@@ -4,7 +4,7 @@ from django.contrib import admin
 
 from adminfiles.models import FileUpload
 from adminfiles.settings import JQUERY_URL
-from adminfiles.listeners import register_listeners
+from adminfiles.listeners import register_listeners, save_instance_form_field
 
 class FileUploadAdmin(admin.ModelAdmin):
     list_display = ['title', 'description', 'upload_date', 'upload', 'mime_type']
@@ -55,6 +55,7 @@ class FilePickerAdmin(admin.ModelAdmin):
                 field.widget.attrs['class'] += " adminfilespicker"
             except KeyError:
                 field.widget.attrs['class'] = 'adminfilespicker'
+        save_instance_form_field(field)
         return field
 
     class Media:
