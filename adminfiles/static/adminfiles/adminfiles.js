@@ -27,6 +27,9 @@ function showEditPopup(triggeringLink) {
     }
     var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
     win.focus();
+    win.onload = function(){
+      win.document.getElementById('id_form_field').value=FIELD_ID;
+    }
     return false;
 }
 
@@ -45,6 +48,9 @@ function showAddUploadPopup(triggeringLink) {
     }
     var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
     win.focus();
+    win.onload = function(){
+      win.document.getElementById('id_form_field').value=FIELD_ID;
+    }
     return false;
 }
 

@@ -1,3 +1,5 @@
+from django import forms
+
 from django.http import HttpResponse
 
 from django.contrib import admin
@@ -6,8 +8,20 @@ from adminfiles.models import FileUpload
 from adminfiles.settings import JQUERY_URL
 from adminfiles.listeners import register_listeners
 
+
+class FileUploadAdminForm(forms.ModelForm):
+
+    model = FileUpload
+
+    def __init__(self, *args, **kwargs):
+        super(FileUploadAdminForm, self).__init__(*args, **kwargs)
+        self.fields['form_field'].widget = forms.HiddenInput()
+
+
 class FileUploadAdmin(admin.ModelAdmin):
-    list_display = ['title', 'description', 'upload_date', 'upload', 'mime_type']
+
+    form = FileUploadAdminForm
+    list_display = ['title', 'description', 'form_field', 'upload_date', 'upload', 'mime_type']
     list_editable = ['description']
     exclude = ('slug',)
 # uncomment for snipshot photo editing feature

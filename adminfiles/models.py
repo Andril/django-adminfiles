@@ -37,13 +37,14 @@ def get_photo_path(instance, filename):
     """
     basename, ext = os.path.splitext(filename)
     hashed_name = hashlib.md5('{0}{1}{2}'.format(uuid.uuid4(), filename, datetime.now()).encode('utf-8')).hexdigest()
-    return join('settings.ADMINFILES_UPLOAD_TO', hashed_name[:2], hashed_name[2:4], hashed_name + ext)
+    return join(settings.ADMINFILES_UPLOAD_TO, hashed_name[:2], hashed_name[2:4], hashed_name + ext)
 
 
 class FileUpload(models.Model):
     upload_date = models.DateTimeField(_('upload date'), auto_now_add=True)
     upload = models.FileField(_('file'), upload_to=get_photo_path)
     title = models.CharField(_('title'), max_length=100)
+    form_field = models.CharField(max_length=200, blank=True, null=True)
     slug = models.SlugField(_('slug'), max_length=100, unique=True)
     description = models.CharField(_('description'), blank=True, max_length=200)
     content_type = models.CharField(editable=False, max_length=100)
