@@ -33,11 +33,11 @@ else:
 def get_photo_path(instance, filename):
     """
     Function is dealing need for parameter `upload_to`.
-    Puts image in MEDIA_ROOT/tour_images/ab/c0/abc01234567890123456789012345678.jpg
+    Puts image in MEDIA_ROOT/tour_images/ab/c0/<slugify_file_name>.jpg
     """
     basename, ext = os.path.splitext(filename)
     hashed_name = hashlib.md5('{0}{1}{2}'.format(uuid.uuid4(), filename, datetime.now()).encode('utf-8')).hexdigest()
-    return join(settings.ADMINFILES_UPLOAD_TO, hashed_name[:2], hashed_name[2:4], hashed_name + ext)
+    return join(settings.ADMINFILES_UPLOAD_TO, hashed_name[:2], hashed_name[2:4], slugify(unidecode(basename)) + ext)
 
 
 class FileUpload(models.Model):
