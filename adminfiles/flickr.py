@@ -198,7 +198,7 @@ class Photo(object):
         try:
             tag_id = tag.id
         except AttributeError:
-            raise FlickrError, "Tag object expected"
+            raise FlickrError("Tag object expected")
         _dopost(method, auth=True, photo_id=self.id, tag_id=tag_id)
         self._load_properties()
 
@@ -231,7 +231,7 @@ class Photo(object):
         for psize in data.rsp.sizes.size:
             if psize.label == size:
                 return getattr(psize, urlType)
-        raise FlickrError, "No URL found"
+        raise FlickrError("No URL found")
 
     def getSizes(self):
         """
@@ -795,7 +795,7 @@ def _doget(method, auth=False, **params):
     data = unmarshal(xml)
     if not data.rsp.stat == 'ok':
         msg = "ERROR [%s]: %s" % (data.rsp.err.code, data.rsp.err.msg)
-        raise FlickrError, msg
+        raise FlickrError(msg)
     return data
 
 def _dopost(method, auth=False, **params):
@@ -822,7 +822,7 @@ def _dopost(method, auth=False, **params):
     data = unmarshal(xml)
     if not data.rsp.stat == 'ok':
         msg = "ERROR [%s]: %s" % (data.rsp.err.code, data.rsp.err.msg)
-        raise FlickrError, msg
+        raise FlickrError(msg)
     return data
 
 def _parse_photo(photo):
@@ -886,4 +886,4 @@ def uniq(alist):    # Fastest without order preserving
     return set.keys()
 
 if __name__ == '__main__':
-    print test_echo()
+    print(test_echo())

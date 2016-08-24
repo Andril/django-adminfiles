@@ -6,6 +6,7 @@ from django.contrib import admin
 from adminfiles.models import FileUploadReference
 from adminfiles.listeners import referring_models
 
+
 class Command(NoArgsCommand):
     """
     Delete all ``FileUploadReference`` instances, then re-save all
@@ -33,6 +34,6 @@ class Command(NoArgsCommand):
         # inheriting their admin options from FilePickerAdmin
         admin.autodiscover()
         for model in referring_models:
-            print "Syncing %s" % model.__name__
+            print("Syncing {}".format(model.__name__))
             for obj in model._default_manager.all():
                 obj.save()
