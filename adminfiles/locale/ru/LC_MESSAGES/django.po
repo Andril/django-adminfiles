@@ -37,7 +37,7 @@ msgstr "слаг"
 
 #: models.py:25
 msgid "description"
-msgstr "описание"
+msgstr "подпись к файлу"
 
 #: models.py:30
 msgid "tags"
