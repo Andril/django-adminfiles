@@ -194,7 +194,7 @@ class ImageForGallery(models.Model):
 
     title = models.CharField(verbose_name='название', max_length=300)
     image = models.ImageField(verbose_name="фото", upload_to=get_photo_path)
-    show_order = models.PositiveIntegerField(verbose_name='порядковый номер вывода', default=0, db_index=True)
+    show_order = models.PositiveIntegerField(verbose_name='порядковый номер вывода', default=1, db_index=True)
     gallery = models.ForeignKey(Gallery, related_name='galleryimages', verbose_name="галерея", db_index=True)
 
     class Meta:

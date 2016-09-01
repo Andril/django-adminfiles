@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('title', models.CharField(max_length=300, verbose_name='название')),
                 ('image', models.ImageField(upload_to=adminfiles.models.get_photo_path, verbose_name='фото')),
-                ('show_order', models.PositiveIntegerField(db_index=True, default=0, verbose_name='порядковый номер вывода')),
+                ('show_order', models.PositiveIntegerField(db_index=True, default=1, verbose_name='порядковый номер вывода')),
                 ('gallery', models.ForeignKey(related_name='galleryimages', verbose_name='галерея', to='adminfiles.Gallery')),
             ],
             options={
