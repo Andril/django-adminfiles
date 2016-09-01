@@ -8,9 +8,9 @@ from adminfiles.models import FileUpload, FileUploadReference
 from adminfiles.parse import get_uploads
 from adminfiles import settings
 
+
 def get_ctype_kwargs(obj):
-    return {'content_type': ContentType.objects.get_for_model(obj),
-            'object_id': obj.id}
+    return {'content_type': ContentType.objects.get_for_model(obj), 'object_id': obj.id}
 
 def _get_field(instance, field):
     """
@@ -26,16 +26,16 @@ def _get_field(instance, field):
         value = value.raw
     return value
 
+
 referring_models = set()
+
             
 def register_listeners(model, fields):
 
     def _update_references(sender, instance, **kwargs):
         ref_kwargs = get_ctype_kwargs(instance)
-        for upload in chain(*[get_uploads(_get_field(instance, field))
-                              for field in fields]):
-            FileUploadReference.objects.get_or_create(**dict(ref_kwargs,
-                                                             upload=upload))
+        for upload in chain(*[get_uploads(_get_field(instance, field)) for field in fields]):
+            FileUploadReference.objects.get_or_create(**dict(ref_kwargs, upload=upload))
 
     def _delete_references(sender, instance, **kwargs):
         ref_kwargs = get_ctype_kwargs(instance)

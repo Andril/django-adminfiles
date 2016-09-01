@@ -1,7 +1,8 @@
 import re
 
 from adminfiles import settings
-from adminfiles.models import FileUpload
+from adminfiles.models import FileUpload, Gallery
+
 
 # Upload references look like: <<< upload-slug : key=val : key2=val2 >>>
 # Spaces are optional, key-val opts are optional, can be any number
@@ -11,6 +12,7 @@ def _get_upload_re():
                       % (re.escape(settings.ADMINFILES_REF_START),
                          re.escape(settings.ADMINFILES_REF_END)))
 UPLOAD_RE = _get_upload_re()
+
 
 def get_uploads(text):
     """
@@ -25,6 +27,7 @@ def get_uploads(text):
             continue
         yield upload
 
+
 def substitute_uploads(text, sub_callback):
     """
     Return text with all upload references substituted using
@@ -33,6 +36,7 @@ def substitute_uploads(text, sub_callback):
 
     """
     return UPLOAD_RE.sub(sub_callback, text)
+
 
 def parse_match(match):
     """
@@ -51,6 +55,17 @@ def parse_match(match):
         upload = None
     options = parse_options(match.group(2))
     return (upload, options)
+
+
+def parse_gallery(match):
+
+    try:
+        gallery = Gallery.objects.get(slug=match.group(1))
+    except Gallery.DoesNotExist:
+        gallery = None
+    options = parse_options(match.group(2))
+    return (gallery, options)    
+
 
 def parse_options(s):
     """

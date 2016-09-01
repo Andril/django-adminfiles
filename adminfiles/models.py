@@ -8,12 +8,12 @@ from datetime import datetime
 import mimetypes
 
 from django.conf import settings as django_settings
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.images import get_image_dimensions
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.core.files.images import get_image_dimensions
 from django.utils.translation import ugettext_lazy as _
-
-from django.contrib.contenttypes.models import ContentType
+from django.utils.safestring import mark_safe
 
 from unidecode import unidecode
 
@@ -22,7 +22,7 @@ try:
 except ImportError:
     from django.contrib.contenttypes.generic import GenericForeignKey
 
-from adminfiles import settings
+from django.conf import settings
 
 if 'tagging' in django_settings.INSTALLED_APPS:
     from tagging.fields import TagField
@@ -125,8 +125,7 @@ class FileUpload(models.Model):
             opts = ':'.join(['%s=%s' % (k,v) for k,v in link[1].items()])
             if opts:
                 ref += ':' + opts
-            yield {'desc': link[0],
-                   'ref': ref}
+            yield {'desc': link[0], 'ref': ref}
 
     def mime_image(self):
         if not settings.ADMINFILES_STDICON_SET:
@@ -153,3 +152,59 @@ class FileUploadReference(models.Model):
 
     class Meta:
         unique_together = ('upload', 'content_type', 'object_id')
+
+
+class Gallery(models.Model):
+
+    """ Gallery model """
+
+    title = models.CharField(verbose_name='название', max_length=150)
+    slug = models.SlugField(verbose_name='slug', max_length=150, unique=True)
+    description = models.CharField(_('подпись к галлерее'), blank=True, max_length=200)
+
+    class Meta:
+        verbose_name = 'галерея'
+        verbose_name_plural = 'галереи'
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.id and not self.slug:
+            slug = slugify(unidecode(self.title))
+            slug_exists = True
+            counter = 1
+            self.slug = slug
+            while slug_exists:
+                try:
+                    slug_exits = Gallery.objects.get(slug=slug)
+                    if slug_exits:
+                        slug = self.slug + '_' + str(counter)
+                        counter += 1
+                except Gallery.DoesNotExist:
+                    self.slug = slug
+                    break
+        super().save()
+
+
+class ImageForGallery(models.Model):
+
+    """ Image model for gallery object """
+
+    title = models.CharField(verbose_name='название', max_length=300)
+    image = models.ImageField(verbose_name="фото", upload_to=get_photo_path)
+    show_order = models.PositiveIntegerField(verbose_name='порядковый номер вывода', default=0, db_index=True)
+    gallery = models.ForeignKey(Gallery, related_name='galleryimages', verbose_name="галерея", db_index=True)
+
+    class Meta:
+        verbose_name = 'фото для галереи'
+        verbose_name_plural = 'фото для галерей'
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+    def image_tag(self):
+        return mark_safe('<img src="{}" width="125" height="125" />'.format(self.get_photo_url)) if self.photo else ''
+    image_tag.short_description = 'Изображение'

@@ -387,7 +387,7 @@ class Photoset(object):
         photo - primary photo
         """
         if not isinstance(photo, Photo):
-            raise TypeError, "Photo expected"
+            raise TypeError(Photo expected)
         
         method = 'flickr.photosets.create'
         data = _dopost(method, auth=True, title=title,\

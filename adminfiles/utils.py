@@ -19,6 +19,7 @@ else:
 from adminfiles.parse import parse_match, substitute_uploads
 from adminfiles import settings
 
+
 def render_uploads(content, template_path="adminfiles/render/"):
     """
     Replace all uploaded file references in a content string with the
@@ -64,14 +65,26 @@ def render_upload(upload, template_path="adminfiles/render/", **options):
         return settings.ADMINFILES_STRING_IF_NOT_FOUND
     template_name = options.pop('as', None)
     if template_name:
-        templates = [template_name,
-                     "%s/default" % template_name.split('/')[0],
-                     "default"]
+        templates = [template_name, "%s/default" % template_name.split('/')[0], "default"]
     else:
-        templates = [join(upload.content_type, upload.sub_type),
-                     join(upload.content_type, "default"),
-                     "default"]
-    tpl = template.loader.select_template(
-        ["%s.html" % join(template_path, p) for p in templates])
-    return tpl.render(template.Context({'upload': upload,
-                                        'options': options}))
+        templates = [join(upload.content_type, upload.sub_type), join(upload.content_type, "default"), "default"]
+    tpl = template.loader.select_template(["%s.html" % join(template_path, p) for p in templates])
+    return tpl.render(template.Context({'upload': upload, 'options': options}))
+
+
+def render_gallery(gallery, template_path="adminfiles/render/", **options):
+    """
+    Render a single ``Galerry`` model instance using the
+    appropriate rendering template and the given keyword options, and
+    return the rendered HTML.
+    
+    The template used to render each gallery is selected based on the
+    mime-type of the gallery. For a gallery with mime-type
+    "image/jpeg", assuming the default ``template_path`` of
+    "adminfiles/render", the template used would be the first one
+    found of the following:``adminfiles/render/gallery/default.html``
+    """
+    if gallery is None:
+        return settings.ADMINFILES_STRING_IF_NOT_FOUND
+    tpl = template.loader.select_template(join(template_path, 'gallery', 'default.html'))
+    return tpl.render(template.Context({'gallery': gallery, 'options': options}))

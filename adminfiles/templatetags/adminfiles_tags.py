@@ -5,9 +5,9 @@ from adminfiles import utils
 
 register = template.Library()
 
+
 @register.filter
-def render_uploads(content,
-                   template_path="adminfiles/render/"):
+def render_uploads(content, template_path="adminfiles/render/"):
     """
     Render uploaded file references in a content string
     (i.e. translate "<<<my-uploaded-file>>>" to '<a
@@ -18,6 +18,7 @@ def render_uploads(content,
     """
     return utils.render_uploads(content, template_path)
 render_uploads.is_safe = True
+
 
 @register.filter
 def render_upload(upload, opts_str=''):
@@ -35,3 +36,21 @@ def render_upload(upload, opts_str=''):
     """
     return utils.render_upload(upload, **parse_options(opts_str))
 render_upload.is_safe = True
+
+
+@register.filter
+def render_gallery(gallery, opts_str=''):
+    """
+    Render a single ``Gallery`` model instance using the
+    appropriate render template for its mime type.
+
+    Expects options to be in the format "key=val:key2=val2", just like
+    the embed syntax. Options are parsed into a dictionary and passed
+    to ``render_gallery``. (A ``template_path`` option can be passed
+    and it will be used as the search path for rendering templates.)
+
+    Just wraps ``adminfiles.utils.render_gallery``.
+
+    """
+    return utils.render_gallery(gallery, **parse_options(opts_str))
+render_gallery.is_safe = True

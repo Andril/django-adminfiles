@@ -12,6 +12,11 @@
         var END = "{{ ADMINFILES_REF_END|safe }}";
     </script>
     <script type="text/javascript" src="{% static 'adminfiles/adminfiles.js' %}"></script>
+    <style type="text/css">
+        #header {
+            background: #fff;
+        }
+    </style>
 
 {% endblock %}
 {% block bodyclass %}adminfiles{% endblock %}
@@ -28,6 +33,9 @@
   <li class="upload">
     <a href="{% url "admin:adminfiles_fileupload_add" %}" class="addlink" id="add_id_uploads" onclick="return showAddUploadPopup(this);">{% trans "Upload" %}</a>
   </li>
+  <li class="upload">
+    <a href="{% url "admin:adminfiles_gallery_add" %}" class="addlink" id="add_id_upload_gallery" onclick="return showAddUploadPopup(this);">Загрузить галерею</a>
+  </li>
   <li>
     <a id="refresh" href="#"><img src="{% static 'adminfiles/icon_refreshlink.gif' %}" /> {% trans "Refresh" %}</a>
   </li>
@@ -40,9 +48,9 @@
        <div class="popup">
            <a href="#" class="close" title="Close">X</a>
            <ul>
-	     {% ifequal field_type "select" %}
-	     <li><a class="select" href="{{f.upload.url}}" rel="{{f.id}}" title="{{f.title}}">{% trans "Select" %}</a></li>
-	     {% else %}
+         {% ifequal field_type "select" %}
+         <li><a class="select" href="{{f.upload.url}}" rel="{{f.id}}" title="{{f.title}}">{% trans "Select" %}</a></li>
+         {% else %}
              {% for link in f.insert_links %}
              <li>
                <a class="insert" href="{{ f.upload.url }}" rel="{{ link.ref }}">
@@ -50,7 +58,7 @@
                </a>
              </li>
              {% endfor %}
-	     {% endifequal %}
+         {% endifequal %}
            </ul>
            <a href="{% url "admin:adminfiles_fileupload_delete" f.id %}" class="deletelink" id="ddd" onclick="return showEditPopup(this);">{% trans "Delete" %}</a>
            <a href="{% url "admin:adminfiles_fileupload_change" f.id %}" class="changelink" id="eee" onclick="return showEditPopup(this);">{% trans "Change" %}</a>
@@ -60,6 +68,28 @@
          <span class="description">{{f.description}}</span><br /></div>
    </li>
    {% endfor %}
+{% endblock %}
+{% block galleries %}
+{% for gallery in galleries %}
+     <li {% if gallery.galleryimages.first %}style="background-image:url({% thumbnail gallery.galleryimages.first.image "144x150" as thumb %}{{ thumb.url }}{% endthumbnail %});"{% endif %}>
+       <div class="popup">
+           <a href="#" class="close" title="Close">X</a>
+           <ul>
+         {% ifequal field_type "select" %}
+            <li><a class="select" href="{{gallery.galleryimages.first.url}}" rel="{{gallery.id}}" title="{{gallery.title}}">Выбрать</a></li>
+         {% else %}
+         <li>
+            <a class="insert" href="{{ gallery.galleryimages.first.url }}" rel="{{ gallery.slug }}">Вставить</a>
+          </li>
+         {% endifequal %}
+           </ul>
+           <a href="{% url "admin:adminfiles_gallery_delete" gallery.id %}" class="deletelink" id="ddd" onclick="return showEditPopup(this);">{% trans "Delete" %}</a>
+           <a href="{% url "admin:adminfiles_gallery_change" gallery.id %}" class="changelink" id="eee" onclick="return showEditPopup(this);">{% trans "Change" %}</a>
+       </div>
+       <div class="upload-title">{{gallery.title}}<br />
+         <span class="description">{{gallery.description}}</span><br /></div>
+   </li>
+{% endfor %}
 {% endblock %}
 </ul>
 {% endblock %}

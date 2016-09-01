@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
-from adminfiles.models import FileUpload
+from adminfiles.models import FileUpload, Gallery
 from adminfiles import settings
 
 class DisableView(Exception):
@@ -23,8 +23,7 @@ class BaseView(TemplateView):
             'field_type': self.request.GET.get('field_type', 'textarea'),
             'ADMINFILES_REF_START': settings.ADMINFILES_REF_START,
             'ADMINFILES_REF_END': settings.ADMINFILES_REF_END,
-            'JQUERY_URL': settings.JQUERY_URL
-        })
+            'JQUERY_URL': settings.JQUERY_URL})
 
         return context
 
@@ -78,8 +77,8 @@ class AllView(BaseView):
     def get_context_data(self, **kwargs):
         context = super(AllView, self).get_context_data(**kwargs)
         context.update({
-            'files': self.files().order_by(*settings.ADMINFILES_THUMB_ORDER)
-        })
+            'files': self.files().order_by(*settings.ADMINFILES_THUMB_ORDER),
+            'galleries': Gallery.objects.all()})
         return context
 
 
