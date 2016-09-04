@@ -40,6 +40,11 @@ def get_photo_path(instance, filename):
     return join(settings.ADMINFILES_UPLOAD_TO, hashed_name[:2], hashed_name[2:4], slugify(unidecode(basename)) + ext)
 
 
+def get_image_url(image):
+    """ Return MEDIA_URL + self.photo """
+    return join(django_settings.MEDIA_URL, str(image)) if image else ''
+
+
 class FileUpload(models.Model):
     upload_date = models.DateTimeField(_('upload date'), auto_now_add=True)
     upload = models.FileField(_('file'), upload_to=get_photo_path)
@@ -134,9 +139,9 @@ class FileUpload(models.Model):
                 % (settings.ADMINFILES_STDICON_SET, self.mime_type()))
 
     @property
-    def get_image_url(self):
-        """ Return MEDIA_URL + self.photo """
-        return join(settings.MEDIA_URL, str(self.upload)) if self.upload else ''
+    def get_upload_url(self):
+        """ Return MEDIA_URL + self.upload """
+        return get_image_url(self.upload)
 
 
 
@@ -202,13 +207,13 @@ class ImageForGallery(models.Model):
         ordering = ['show_order']
 
     def __str__(self):
-        return '{} - {}'.format(self.gallery.title, self.pk)   
-
-    @property
-    def get_image_url(self):
-        """ Image url """
-        return get_image_url(self.image)
+        return '{} - {}'.format(self.gallery.title, self.pk)
 
     def image_tag(self):
-        return mark_safe('<img src="{}" width="125" height="125" />'.format(self.get_image_url)) if self.photo else ''
+        return mark_safe('<img src="{}" width="125" height="125" />'.format(self.get_gallery_image_url)) if self.image else ''
     image_tag.short_description = 'Изображение'
+
+    @property
+    def get_gallery_image_url(self):
+        """ Image url """
+        return get_image_url(self.image)
