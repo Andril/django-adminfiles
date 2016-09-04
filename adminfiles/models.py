@@ -175,6 +175,17 @@ class Gallery(models.Model):
     def __str__(self):
         return self.title
 
+    def insert_links(self):
+        links = []
+        if '' in settings.ADMINFILES_INSERT_LINKS:
+            links = settings.ADMINFILES_INSERT_LINKS[key]
+        for link in links:
+            ref = self.slug
+            opts = ':'.join(['%s=%s' % (k,v) for k,v in link[1].items()])
+            if opts:
+                ref += ':' + opts
+            yield {'desc': link[0], 'ref': ref}
+
     def save(self, *args, **kwargs):
         if not self.id and not self.slug:
             slug = slugify(unidecode(self.title))
