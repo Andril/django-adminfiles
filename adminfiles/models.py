@@ -178,7 +178,7 @@ class Gallery(models.Model):
     def insert_links(self):
         links = []
         if '' in settings.ADMINFILES_INSERT_LINKS:
-            links = settings.ADMINFILES_INSERT_LINKS[key]
+            links = settings.ADMINFILES_INSERT_LINKS['']
         for link in links:
             ref = self.slug
             opts = ':'.join(['%s=%s' % (k,v) for k,v in link[1].items()])
