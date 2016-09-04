@@ -74,7 +74,7 @@ class GalleryImagesInline(SortableInlineAdminMixin, admin.TabularInline):
 
     model = ImageForGallery
     extra = 0
-    fields = ('show_order', 'title', 'image',)
+    fields = ('show_order', 'image', 'image_tag',)
     readonly_fields = ('image_tag',)
 
 

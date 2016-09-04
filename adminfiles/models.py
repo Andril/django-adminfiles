@@ -22,7 +22,7 @@ try:
 except ImportError:
     from django.contrib.contenttypes.generic import GenericForeignKey
 
-from django.conf import settings
+from adminfiles import settings
 
 if 'tagging' in django_settings.INSTALLED_APPS:
     from tagging.fields import TagField
@@ -33,7 +33,7 @@ else:
 def get_photo_path(instance, filename):
     """
     Function is dealing need for parameter `upload_to`.
-    Puts image in MEDIA_ROOT/tour_images/ab/c0/<slugify_file_name>.jpg
+    Puts image in MEDIA_ROOT/adminfiles/ab/c0/<slugify_file_name>.jpg
     """
     basename, ext = os.path.splitext(filename)
     hashed_name = hashlib.md5('{0}{1}{2}'.format(uuid.uuid4(), filename, datetime.now()).encode('utf-8')).hexdigest()
@@ -192,7 +192,6 @@ class ImageForGallery(models.Model):
 
     """ Image model for gallery object """
 
-    title = models.CharField(verbose_name='название', max_length=300)
     image = models.ImageField(verbose_name="фото", upload_to=get_photo_path)
     show_order = models.PositiveIntegerField(verbose_name='порядковый номер вывода', default=1, db_index=True)
     gallery = models.ForeignKey(Gallery, related_name='galleryimages', verbose_name="галерея", db_index=True)
@@ -200,11 +199,16 @@ class ImageForGallery(models.Model):
     class Meta:
         verbose_name = 'фото для галереи'
         verbose_name_plural = 'фото для галерей'
-        ordering = ['title']
+        ordering = ['show_order']
 
     def __str__(self):
-        return self.title
+        return '{} - {}'.format(self.gallery.title, self.pk)   
+
+    @property
+    def get_image_url(self):
+        """ Image url """
+        return get_image_url(self.image)
 
     def image_tag(self):
-        return mark_safe('<img src="{}" width="125" height="125" />'.format(self.get_photo_url)) if self.photo else ''
+        return mark_safe('<img src="{}" width="125" height="125" />'.format(self.get_image_url)) if self.photo else ''
     image_tag.short_description = 'Изображение'

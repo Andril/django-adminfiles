@@ -7,7 +7,7 @@
 		       $(this).siblings('a.add-another').remove();
 		       href += '&field_type=select';
 	           }
-	           $(this).after('<iframe frameborder="0" style="border:none; width:755px; height:220px;" src="' + href + '"></iframe>');
+	           $(this).after('<iframe frameborder="0" style="border:none; width:755px; height:250px;" src="' + href + '"></iframe>');
 	       });
        });
  })(jQuery);
