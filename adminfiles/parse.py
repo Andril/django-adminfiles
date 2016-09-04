@@ -8,10 +8,19 @@ from adminfiles.models import FileUpload, Gallery
 # Spaces are optional, key-val opts are optional, can be any number
 # extra indirection is for testability
 def _get_upload_re():
-    return re.compile(r'%s\s*([\w-]+)((\s*:\s*\w+\s*=\s*.+?)*)\s*%s'
-                      % (re.escape(settings.ADMINFILES_REF_START),
-                         re.escape(settings.ADMINFILES_REF_END)))
+    return re.compile(
+        r'%s\s*([\w-]+)((\s*:\s*\w+\s*=\s*.+?)*)\s*%s' %
+        (re.escape(settings.ADMINFILES_REF_START), re.escape(settings.ADMINFILES_REF_END)))
+
+
+def _get_gallery_re():
+    return re.compile(
+        r'%s\s*([\w-]+)((\s*:\s*\w+\s*=\s*.+?)*)\s*%s' %
+        (re.escape(settings.ADMINFILES_GALLERY_START), re.escape(settings.ADMINFILES_GALLERY_END)))
+
+
 UPLOAD_RE = _get_upload_re()
+GALLERY_RE = _get_gallery_re()
 
 
 def get_uploads(text):
@@ -26,6 +35,20 @@ def get_uploads(text):
         except FileUpload.DoesNotExist:
             continue
         yield upload
+
+
+def get_galleries(text):
+    """
+    Return a generator yielding galleries referenced in the given text.
+
+    """
+    galleries = []
+    for match in GALLERY_RE.finditer(text):
+        try:
+            gallery = Gallery.objects.get(slug=match.group(1))
+        except Gallery.DoesNotExist:
+            continue
+        yield gallery
 
 
 def substitute_uploads(text, sub_callback):
