@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=150, verbose_name='название')),
                 ('slug', models.SlugField(unique=True, max_length=150, verbose_name='slug')),
                 ('form_field', models.CharField(max_length=200, verbose_name='поле формы', blank=True, null=True)),
-                ('description', models.CharField(max_length=200, verbose_name='подпись к галлерее', blank=True)),
+                ('description', models.CharField(max_length=200, verbose_name='подпись к галерее', blank=True)),
             ],
             options={
                 'verbose_name': 'галерея',

@@ -165,7 +165,7 @@ class Gallery(models.Model):
     title = models.CharField(verbose_name='название', max_length=150)
     slug = models.SlugField(verbose_name='slug', max_length=150, unique=True)
     form_field = models.CharField(max_length=200, blank=True, null=True)
-    description = models.CharField(_('подпись к галлерее'), blank=True, max_length=200)
+    description = models.CharField(_('подпись к галерее'), blank=True, max_length=200)
 
     class Meta:
         verbose_name = 'галерея'
