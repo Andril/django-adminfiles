@@ -857,7 +857,7 @@ def unmarshal(element):
         for child in childElements:
             key = child.tagName
             if hasattr(rc, key):
-                if type(getattr(rc, key)) <> type([]):
+                if type(getattr(rc, key)) != type([]):
                     setattr(rc, key, [getattr(rc, key)])
                 setattr(rc, key, getattr(rc, key) + [unmarshal(child)])
             elif isinstance(child, minidom.Element) and \
