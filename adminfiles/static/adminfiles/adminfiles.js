@@ -60,37 +60,37 @@ function dismissAddUploadPopup(win) {
 }
 
 $(function(){
-      $('#adminfiles li').click(
-          function(){
-	      $(this).children('.popup').show();
-	  });
-      $('.popup .close').click(
-          function(){
-	      $(this).parent('.popup').hide();
-	      return false;
-	  });
-      $('.popup .select').click(
-          function(){
-	      for (i=0; i<FIELD.options.length; i++) {
-		  if (FIELD.options[i].value == this.rel) {
-                      FIELD.options[i].selected = true;
-                  }
-	      }
-	      $(this).parents('.popup').hide();
-	      return false;
-	  });
-      $('.popup .insert').click(
-          function(){
-              var insertText = this.rel;
-              if(!insertText.match('://')) {
-                  insertText = START + insertText + END;
-                  }
-              insertAtCursor(FIELD, insertText);
-	      $(this).parents('.popup').hide();
-	      return false;
-	});
+  $('#adminfiles li').click(
+    function(){
+      $(this).children('.popup').show();
+    });
+  $('.popup .close').click(
+    function(){
+      $(this).parent('.popup').hide();
+      return false;
+    });
+  $('.popup .select').click(
+    function(){
+      for (i=0; i<FIELD.options.length; i++) {
+        if (FIELD.options[i].value == this.rel) {
+          FIELD.options[i].selected = true;
+        }
+      }
+    $(this).parents('.popup').hide();
+    return false;
+    });
+  $('.popup .insert').click(
+    function(){
+      var insertText = this.rel;
+      if(!insertText.match('://')) {
+          insertText = START + insertText + END;
+      }
+    insertAtCursor(FIELD, insertText);
+    $(this).parents('.popup').hide();
+    return false;
+  });
     $('#refresh').click(function(){
-	    location.reload(true);
-	    return false;
-	});
+      location.reload(true);
+      return false;
+  });
 });

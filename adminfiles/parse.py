@@ -1,16 +1,20 @@
 import re
 
 from adminfiles import settings
-from adminfiles.models import FileUpload
+from adminfiles.models import FileUpload, Gallery
+
 
 # Upload references look like: <<< upload-slug : key=val : key2=val2 >>>
 # Spaces are optional, key-val opts are optional, can be any number
 # extra indirection is for testability
 def _get_upload_re():
-    return re.compile(r'%s\s*([\w-]+)((\s*:\s*\w+\s*=\s*.+?)*)\s*%s'
-                      % (re.escape(settings.ADMINFILES_REF_START),
-                         re.escape(settings.ADMINFILES_REF_END)))
+    return re.compile(
+        r'%s\s*([\w-]+)((\s*:\s*\w+\s*=\s*.+?)*)\s*%s' %
+        (re.escape(settings.ADMINFILES_REF_START), re.escape(settings.ADMINFILES_REF_END)))
+
+
 UPLOAD_RE = _get_upload_re()
+
 
 def get_uploads(text):
     """
@@ -25,6 +29,7 @@ def get_uploads(text):
             continue
         yield upload
 
+
 def substitute_uploads(text, sub_callback):
     """
     Return text with all upload references substituted using
@@ -33,6 +38,7 @@ def substitute_uploads(text, sub_callback):
 
     """
     return UPLOAD_RE.sub(sub_callback, text)
+
 
 def parse_match(match):
     """
@@ -48,9 +54,12 @@ def parse_match(match):
     try:
         upload = FileUpload.objects.get(slug=match.group(1))
     except FileUpload.DoesNotExist:
+        upload = Gallery.objects.get(slug=match.group(1))
+    except Gallery.DoesNotExist:
         upload = None
     options = parse_options(match.group(2))
     return (upload, options)
+
 
 def parse_options(s):
     """

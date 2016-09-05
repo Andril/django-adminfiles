@@ -19,6 +19,7 @@ else:
 from adminfiles.parse import parse_match, substitute_uploads
 from adminfiles import settings
 
+
 def render_uploads(content, template_path="adminfiles/render/"):
     """
     Replace all uploaded file references in a content string with the
@@ -41,7 +42,10 @@ def render_uploads(content, template_path="adminfiles/render/"):
     """
     def _replace(match):
         upload, options = parse_match(match)
-        return render_upload(upload, template_path, **options)
+        if upload.__class__.__name__ == 'Gallery':
+            return render_gallery(upload, template_path, **options)
+        else:
+            return render_upload(upload, template_path, **options)
     return oembed_replace(substitute_uploads(content, _replace))
 
 
@@ -64,14 +68,15 @@ def render_upload(upload, template_path="adminfiles/render/", **options):
         return settings.ADMINFILES_STRING_IF_NOT_FOUND
     template_name = options.pop('as', None)
     if template_name:
-        templates = [template_name,
-                     "%s/default" % template_name.split('/')[0],
-                     "default"]
+        templates = [template_name, "%s/default" % template_name.split('/')[0], "default"]
     else:
-        templates = [join(upload.content_type, upload.sub_type),
-                     join(upload.content_type, "default"),
-                     "default"]
-    tpl = template.loader.select_template(
-        ["%s.html" % join(template_path, p) for p in templates])
-    return tpl.render(template.Context({'upload': upload,
-                                        'options': options}))
+        templates = [join(upload.content_type, upload.sub_type), join(upload.content_type, "default"), "default"]
+    tpl = template.loader.select_template(["%s.html" % join(template_path, p) for p in templates])
+    return tpl.render(template.Context({'upload': upload, 'options': options}))
+
+
+def render_gallery(gallery, template_path="adminfiles/render/", **options):
+    if gallery is None:
+        return settings.ADMINFILES_STRING_IF_NOT_FOUND
+    gallery_template = 'adminfiles/render/gallery/default.html'
+    return template.loader.render_to_string(gallery_template, dict(gallery=gallery, options=options))

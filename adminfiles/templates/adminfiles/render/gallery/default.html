@@ -1,0 +1,17 @@
+{% load thumbnail %}
+{% spaceless %}
+<div class="content__wide">
+    <div class="slider">
+        {% for image in gallery.galleryimages.all %}
+            <div class="slider__item">
+            {% thumbnail image.image "760x530" crop="center" as thumb %}
+                <img src="{{ thumb.url }}" width="760" height="530" alt="">
+            {% endthumbnail %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% if gallery.description %}
+    <p class="content__info">{{ gallery.description }}</p>
+{% endif %}
+{% endspaceless %}
