@@ -18,7 +18,7 @@ class Command(NoArgsCommand):
                 view_class = import_browser(browser_path)
                 view_class().check()
                 message = 'enabled'
-            except (DisableView, ImportError), e:
+            except (DisableView, ImportError) as e:
                 message = 'disabled ({})'.format(e.args[0])
             if not issubclass(view_class, BaseView):
                 message = 'disabled (not subclass of adminfiles.views.BaseView)'

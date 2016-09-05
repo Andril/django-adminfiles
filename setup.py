@@ -49,6 +49,7 @@ setup(
                                  'static/adminfiles/mimetypes/*.png',
                                  'templates/adminfiles/render/*.html',
                                  'templates/adminfiles/render/image/*.html',
+                                 'templates/adminfiles/render/gallery/*.html',
                                  'templates/adminfiles/uploader/*.html',
                                  'locale/*/LC_MESSAGES/*']}
 )

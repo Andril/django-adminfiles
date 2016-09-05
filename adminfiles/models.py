@@ -8,12 +8,12 @@ from datetime import datetime
 import mimetypes
 
 from django.conf import settings as django_settings
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.images import get_image_dimensions
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.core.files.images import get_image_dimensions
 from django.utils.translation import ugettext_lazy as _
-
-from django.contrib.contenttypes.models import ContentType
+from django.utils.safestring import mark_safe
 
 from unidecode import unidecode
 
@@ -33,11 +33,16 @@ else:
 def get_photo_path(instance, filename):
     """
     Function is dealing need for parameter `upload_to`.
-    Puts image in MEDIA_ROOT/tour_images/ab/c0/<slugify_file_name>.jpg
+    Puts image in MEDIA_ROOT/adminfiles/ab/c0/<slugify_file_name>.jpg
     """
     basename, ext = os.path.splitext(filename)
     hashed_name = hashlib.md5('{0}{1}{2}'.format(uuid.uuid4(), filename, datetime.now()).encode('utf-8')).hexdigest()
     return join(settings.ADMINFILES_UPLOAD_TO, hashed_name[:2], hashed_name[2:4], slugify(unidecode(basename)) + ext)
+
+
+def get_image_url(image):
+    """ Return MEDIA_URL + self.photo """
+    return join(django_settings.MEDIA_URL, str(image)) if image else ''
 
 
 class FileUpload(models.Model):
@@ -97,7 +102,7 @@ class FileUpload(models.Model):
                 try:
                     slug_exits = FileUpload.objects.get(slug=slug)
                     if slug_exits:
-                        slug = self.slug + '_' + str(counter)
+                        slug = '{}_{}'.format(self.slug, str(counter))
                         counter += 1
                 except FileUpload.DoesNotExist:
                     self.slug = slug
@@ -125,8 +130,7 @@ class FileUpload(models.Model):
             opts = ':'.join(['%s=%s' % (k,v) for k,v in link[1].items()])
             if opts:
                 ref += ':' + opts
-            yield {'desc': link[0],
-                   'ref': ref}
+            yield {'desc': link[0], 'ref': ref}
 
     def mime_image(self):
         if not settings.ADMINFILES_STDICON_SET:
@@ -135,10 +139,9 @@ class FileUpload(models.Model):
                 % (settings.ADMINFILES_STDICON_SET, self.mime_type()))
 
     @property
-    def get_image_url(self):
-        """ Return MEDIA_URL + self.photo """
-        return join(settings.MEDIA_URL, str(self.upload)) if self.upload else ''
-
+    def get_upload_url(self):
+        """ Return MEDIA_URL + self.upload """
+        return get_image_url(self.upload)
 
 
 class FileUploadReference(models.Model):
@@ -153,3 +156,75 @@ class FileUploadReference(models.Model):
 
     class Meta:
         unique_together = ('upload', 'content_type', 'object_id')
+
+
+class Gallery(models.Model):
+
+    """ Gallery model """
+
+    title = models.CharField(verbose_name='название', max_length=150)
+    slug = models.SlugField(verbose_name='slug', max_length=150, unique=True)
+    form_field = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(_('подпись к галлерее'), blank=True, max_length=200)
+
+    class Meta:
+        verbose_name = 'галерея'
+        verbose_name_plural = 'галереи'
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+    def insert_links(self):
+        links = []
+        if '' in settings.ADMINFILES_INSERT_LINKS:
+            links = settings.ADMINFILES_INSERT_LINKS['']
+        for link in links:
+            ref = self.slug
+            opts = ':'.join(['%s=%s' % (k,v) for k,v in link[1].items()])
+            if opts:
+                ref += ':' + opts
+            yield {'desc': link[0], 'ref': ref}
+
+    def save(self, *args, **kwargs):
+        if not self.id and not self.slug:
+            slug = slugify(unidecode(self.title))
+            slug_exists = True
+            counter = 1
+            self.slug = slug
+            while slug_exists:
+                slug_exits = Gallery.objects.filter(slug=slug).first()
+                slug_upload = FileUpload.objects.filter(slug=slug).first()
+                if slug_exits or slug_upload:
+                    slug = '{}_{}'.format(self.slug, str(counter))
+                    counter += 1
+                else:
+                    self.slug = slug
+                    break
+        super().save()
+
+
+class ImageForGallery(models.Model):
+
+    """ Image model for gallery object """
+
+    image = models.ImageField(verbose_name="фото", upload_to=get_photo_path)
+    show_order = models.PositiveIntegerField(verbose_name='порядковый номер вывода', default=1, db_index=True)
+    gallery = models.ForeignKey(Gallery, related_name='galleryimages', verbose_name="галерея", db_index=True)
+
+    class Meta:
+        verbose_name = 'фото для галереи'
+        verbose_name_plural = 'фото для галерей'
+        ordering = ['show_order']
+
+    def __str__(self):
+        return '{} - {}'.format(self.gallery.title, self.pk)
+
+    def image_tag(self):
+        return mark_safe('<img src="{}" width="125" height="125" />'.format(self.get_gallery_image_url)) if self.image else ''
+    image_tag.short_description = 'Изображение'
+
+    @property
+    def get_gallery_image_url(self):
+        """ Image url """
+        return get_image_url(self.image)
