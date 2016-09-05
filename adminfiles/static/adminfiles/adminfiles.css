@@ -8,7 +8,7 @@
     padding:0; 
     position:absolute; 
     top:0px; 
-    left:110px; 
+    left:170px; 
 }
 
 #adminfiles .nav {
@@ -32,8 +32,8 @@
     background:#fafafa url(mimetypes/empty.png) no-repeat 41px 70px; 
     text-align:center; 
     cursor:pointer; 
-    width:144px; 
-    height:150px; 
+    width:160px; 
+    height:160px; 
     margin:0 11px 12px 0;
 }
 
@@ -47,7 +47,7 @@
     z-index:100; 
     opacity:0.9; 
     background:#eee; 
-    width:126px; 
+    width:145px; 
     height:120px; 
     padding:5px; 
     display:none; 
@@ -87,6 +87,7 @@
 }
 
 .pdf { background-image:url(mimetypes/pdf.png); }
+.gallery_image { background-image:url(mimetypes/gallery.png); }
 .msword { background-image:url(mimetypes/doc.png); }
 .vndms-excel { background-image:url(mimetypes/xls.png); }
 .zip, .x-tar { background-image:url(mimetypes/zip.png); }

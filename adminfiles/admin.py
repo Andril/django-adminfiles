@@ -14,7 +14,7 @@ class FileUploadAdminForm(forms.ModelForm):
     model = FileUpload
 
     def __init__(self, *args, **kwargs):
-        super(FileUploadAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['form_field'].widget = forms.HiddenInput()
 
 
@@ -78,8 +78,19 @@ class GalleryImagesInline(SortableInlineAdminMixin, admin.TabularInline):
     readonly_fields = ('image_tag',)
 
 
+class GalleryAdminForm(forms.ModelForm):
+
+    model = Gallery
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['form_field'].widget = forms.HiddenInput()
+
+
 class GalleryAdmin(admin.ModelAdmin):
 
+    form = FileUploadAdminForm
+    list_display = ['title', 'description', 'form_field']
     exclude = ('slug',)
     inlines = [GalleryImagesInline]
 

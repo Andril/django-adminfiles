@@ -42,7 +42,10 @@ def render_uploads(content, template_path="adminfiles/render/"):
     """
     def _replace(match):
         upload, options = parse_match(match)
-        return render_upload(upload, template_path, **options)
+        if upload.__class__.__name__ == 'Gallery':
+            return render_gallery(upload, template_path, **options)
+        else:
+            return render_upload(upload, template_path, **options)
     return oembed_replace(substitute_uploads(content, _replace))
 
 
@@ -73,18 +76,7 @@ def render_upload(upload, template_path="adminfiles/render/", **options):
 
 
 def render_gallery(gallery, template_path="adminfiles/render/", **options):
-    """
-    Render a single ``Galerry`` model instance using the
-    appropriate rendering template and the given keyword options, and
-    return the rendered HTML.
-    
-    The template used to render each gallery is selected based on the
-    mime-type of the gallery. For a gallery with mime-type
-    "image/jpeg", assuming the default ``template_path`` of
-    "adminfiles/render", the template used would be the first one
-    found of the following:``adminfiles/render/gallery/default.html``
-    """
     if gallery is None:
         return settings.ADMINFILES_STRING_IF_NOT_FOUND
-    tpl = template.loader.select_template(join(template_path, 'gallery', 'default.html'))
-    return tpl.render(template.Context({'gallery': gallery, 'options': options}))
+    gallery_template = 'adminfiles/render/gallery/default.html'
+    return template.loader.render_to_string(gallery_template, dict(gallery=gallery, options=options))

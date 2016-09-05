@@ -102,7 +102,7 @@ class FileUpload(models.Model):
                 try:
                     slug_exits = FileUpload.objects.get(slug=slug)
                     if slug_exits:
-                        slug = self.slug + '_' + str(counter)
+                        slug = '{}_{}'.format(self.slug, str(counter))
                         counter += 1
                 except FileUpload.DoesNotExist:
                     self.slug = slug
@@ -144,7 +144,6 @@ class FileUpload(models.Model):
         return get_image_url(self.upload)
 
 
-
 class FileUploadReference(models.Model):
     """
     Tracks which ``FileUpload``s are referenced by which content models.
@@ -165,6 +164,7 @@ class Gallery(models.Model):
 
     title = models.CharField(verbose_name='название', max_length=150)
     slug = models.SlugField(verbose_name='slug', max_length=150, unique=True)
+    form_field = models.CharField(max_length=200, blank=True, null=True)
     description = models.CharField(_('подпись к галлерее'), blank=True, max_length=200)
 
     class Meta:
@@ -193,12 +193,12 @@ class Gallery(models.Model):
             counter = 1
             self.slug = slug
             while slug_exists:
-                try:
-                    slug_exits = Gallery.objects.get(slug=slug)
-                    if slug_exits:
-                        slug = self.slug + '_' + str(counter)
-                        counter += 1
-                except Gallery.DoesNotExist:
+                slug_exits = Gallery.objects.filter(slug=slug).first()
+                slug_upload = FileUpload.objects.filter(slug=slug).first()
+                if slug_exits or slug_upload:
+                    slug = '{}_{}'.format(self.slug, str(counter))
+                    counter += 1
+                else:
                     self.slug = slug
                     break
         super().save()

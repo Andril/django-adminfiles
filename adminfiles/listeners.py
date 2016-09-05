@@ -68,10 +68,12 @@ def _update_content(sender, instance, created=None, **kwargs):
         except AttributeError:
             pass
 
+
 def _register_upload_listener():
     if settings.ADMINFILES_USE_SIGNALS:
         post_save.connect(_update_content, sender=FileUpload)
 _register_upload_listener()
+
 
 def _disconnect_upload_listener():
     post_save.disconnect(_update_content)

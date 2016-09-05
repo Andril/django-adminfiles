@@ -71,14 +71,14 @@ class AllView(BaseView):
     link_text = _('All Uploads')
 
     def files(self):
-        field_id = self.request.GET['field']
-        return FileUpload.objects.filter(form_field=field_id)
+        self.field_id = self.request.GET['field']
+        return FileUpload.objects.filter(form_field=self.field_id)
 
     def get_context_data(self, **kwargs):
         context = super(AllView, self).get_context_data(**kwargs)
         context.update({
             'files': self.files().order_by(*settings.ADMINFILES_THUMB_ORDER),
-            'galleries': Gallery.objects.all()})
+            'galleries': Gallery.objects.filter(form_field=self.field_id).prefetch_related('galleryimages')})
         return context
 
 
