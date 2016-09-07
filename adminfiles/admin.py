@@ -51,7 +51,9 @@ class FileUploadAdmin(admin.ModelAdmin):
 
 
 class FilePickerAdmin(admin.ModelAdmin):
+
     adminfiles_fields = []
+    gallery_fields = []
 
     def __init__(self, *args, **kwargs):
         super(FilePickerAdmin, self).__init__(*args, **kwargs)
@@ -64,6 +66,11 @@ class FilePickerAdmin(admin.ModelAdmin):
                 field.widget.attrs['class'] += " adminfilespicker"
             except KeyError:
                 field.widget.attrs['class'] = 'adminfilespicker'
+        if db_field.name in self.gallery_fields:
+            try:
+                field.widget.attrs['class'] += " galleryfield"
+            except KeyError:
+                field.widget.attrs['class'] = 'galleryfield'
         return field
 
     class Media:

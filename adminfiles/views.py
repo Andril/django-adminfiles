@@ -19,7 +19,8 @@ class BaseView(TemplateView):
         context = super(BaseView, self).get_context_data(**kwargs)
         context.update({
             'browsers': get_enabled_browsers(),
-            'field_id': self.request.GET['field'],
+            'field_id': self.request.GET.get('field'),
+            'extra': self.request.GET.get('extra'),
             'field_type': self.request.GET.get('field_type', 'textarea'),
             'ADMINFILES_REF_START': settings.ADMINFILES_REF_START,
             'ADMINFILES_REF_END': settings.ADMINFILES_REF_END,
