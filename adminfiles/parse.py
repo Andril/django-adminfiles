@@ -54,9 +54,10 @@ def parse_match(match):
     try:
         upload = FileUpload.objects.get(slug=match.group(1))
     except FileUpload.DoesNotExist:
-        upload = Gallery.objects.get(slug=match.group(1))
-    except Gallery.DoesNotExist:
-        upload = None
+        try:
+            upload = Gallery.objects.get(slug=match.group(1))
+        except Gallery.DoesNotExist:
+            upload = None
     options = parse_options(match.group(2))
     return (upload, options)
 
